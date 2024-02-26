@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import Webcam from "react-webcam";
 import { Socket } from "socket.io-client";
 
@@ -41,29 +41,9 @@ function WebcamImage(props: Props) {
   const set_source_image = useCallback(() => {
     if (webcamRef.current) {
         const imageSrc = webcamRef.current.getScreenshot();
-        console.log(imageSrc)
         props.setSourceImage(imageSrc);
     }
   }, [webcamRef]);
-
-
-  useEffect(() => {
-    props.socket.on('ImageResponse', (data) => {
-      console.log(data)
-    })
-    props.socket.on('kpNormImage', (data) => {
-      console.log(data)
-      if (!props.kp_norm_sent){
-        props.send_kp_norm_image(data)
-        console.log("kp_norm_sent")
-      }
-    })
-    props.socket.on("ResultImage", (data) => {
-      console.log(data)
-      props.setImage(data)
-      console.log("image settet")
-    })
-  }, [props.socket])
 
   return (
     <div className="Container">

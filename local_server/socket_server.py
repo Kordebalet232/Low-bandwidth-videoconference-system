@@ -99,6 +99,7 @@ def handle_message(data):
     image_data = data["image"].split(",")[1]
     img = imread(io.BytesIO(base64.b64decode(image_data)))
     coder.set_sourse_image(img)
+    print("source setted")
     emit('ImageResponse', {"setted": True}, broadcast=True)
 
 @socketio.on('sendDrivingImage', namespace='/test')
@@ -117,6 +118,7 @@ def handle_message(data):
     picture = coder.make_picture(kp_norm)
     base64_picture = base64.b64encode(cv2.imencode('.jpeg', cv2.cvtColor(img_as_ubyte(picture), cv2.COLOR_BGR2RGB))[1]).decode('utf-8')
     emit("ResultImage", base64_picture, broadcast=True)
+    print("result sent")
 
 
 @socketio.on('disconnect', namespace='/test')

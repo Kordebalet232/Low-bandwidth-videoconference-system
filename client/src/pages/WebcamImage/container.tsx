@@ -1,14 +1,11 @@
 import { connect } from "react-redux";
-import { CombinedState } from "redux";
 import TestingCallT from "../../types/testingCallTypes";
 import WebcamImage from "./WebcamImage";
 import Action from "../../types/Action";
 import testingCallAC from "../../store/actionCreators/testingCallAC";
 
 function mapStateToProps(
-    state:  CombinedState<{
-        testingCall: TestingCallT;
-    }>
+    state
 ) {
     return {
         socket: state.testingCall.socket,
