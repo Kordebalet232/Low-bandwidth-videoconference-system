@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import WebcamImage from "./pages/WebcamImage/container";
 import './App.css';
-import { startListening } from './store/states/testingCall';
+import { startListening, startListening_server } from './store/states/testingCall';
 import { useDispatch } from 'react-redux';
 
 
@@ -11,6 +11,10 @@ function App() {
 
   useEffect(() => {
     dispatch(startListening());
+  }, [dispatch])
+
+  useEffect(() => {
+    dispatch(startListening_server());
   }, [dispatch])
 
   return (

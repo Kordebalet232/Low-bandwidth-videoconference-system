@@ -1,23 +1,14 @@
-import React, { useCallback, useRef } from "react";
+import React, { useRef } from "react";
 import Webcam from "react-webcam";
-import { Socket } from "socket.io-client";
 
 
 type Props = {
-  socket: Socket;
   image_to_show: string | null;
-  kp_norm_sent: Boolean;
-  setImage: (
-    image: string,
-  ) => void;
-  sendImage: (
-    image: string,
-  ) => void;
-  setSourceImage: (
-    image: string,
-  ) => void;
-  send_kp_norm_image: (
+  getKpNorm: (
     kp_norm: any,
+  ) => void;
+  set_screenshot: (
+    webcamRef: any,
   ) => void;
 }
 
@@ -31,19 +22,17 @@ function WebcamImage(props: Props) {
     facingMode: "user",
   };
 
-  const start_driving = useCallback(() => {
-    if (webcamRef.current) {
-        const imageSrc = webcamRef.current.getScreenshot();
-        props.sendImage(imageSrc);
+let timerId = setTimeout(function tick() {
+  if (webcamRef.current) {
+    const imageSrc =  webcamRef.current.getScreenshot();
+    if (imageSrc !== null) {
+      props.set_screenshot(imageSrc)
+      props.getKpNorm(imageSrc)
+      console.log("made screenshot")
     }
-  }, [webcamRef]);
-
-  const set_source_image = useCallback(() => {
-    if (webcamRef.current) {
-        const imageSrc = webcamRef.current.getScreenshot();
-        props.setSourceImage(imageSrc);
-    }
-  }, [webcamRef]);
+  }
+  timerId = setTimeout(tick, 3000);
+}, 3000)
 
   return (
     <div className="Container">
@@ -55,9 +44,8 @@ function WebcamImage(props: Props) {
             ref={webcamRef}
             screenshotFormat="image/jpeg"
             videoConstraints={videoConstraints}
+            id="webcam"
           />
-          <button onClick={set_source_image}>Set Source</button>
-          <button onClick={start_driving}>Start driving</button>
           <div>
             <img src={props.image_to_show === null ? require("../../images/placeholder.jpg") : props.image_to_show} width="400" height="400" alt="screenshot" />
           </div>
