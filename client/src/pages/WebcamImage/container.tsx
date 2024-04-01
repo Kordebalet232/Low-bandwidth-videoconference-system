@@ -7,7 +7,7 @@ function mapStateToProps(
     state
 ) {
     return {
-        image_to_show: state.testingCall.currentImage,
+        users: [...state.testingCall.users.entries()]
     }
 }
 

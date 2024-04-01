@@ -3,7 +3,7 @@ import Webcam from "react-webcam";
 
 
 type Props = {
-  image_to_show: string | null;
+  users: any[];
   getKpNorm: (
     kp_norm: any,
   ) => void;
@@ -46,9 +46,11 @@ let timerId = setTimeout(function tick() {
             videoConstraints={videoConstraints}
             id="webcam"
           />
-          <div>
-            <img src={props.image_to_show === null ? require("../../images/placeholder.jpg") : props.image_to_show} width="400" height="400" alt="screenshot" />
-          </div>
+          {props.users.map(([key, value]) => (
+            <div>
+              <p>{key}</p>
+              <img id={key} src={value} width="400" height="400" alt="screenshot"/>
+            </div>))}
     </div>
   );
 }

@@ -94,16 +94,13 @@ def test_connect():
 
 @socketio.on('setSourceImage', namespace='/test') # устанавливаем новый source, как для себя, так и для собеседников
 def handle_message(data):
-    print('got source')
     image_data = data["image"].split(",")[1]
     id = data["id"]
     img = imread(io.BytesIO(base64.b64decode(image_data)))
     coder.set_sourse_image(id, img)
-    print('setted with id ' + str(data['id']))
 
 @socketio.on('makeKpNorm', namespace='/test') # Получаем запрос на преобразование изображения в вектор (только для собственных изображений)
 def handle_message(data):
-    print('kp_norm req')
     if "0" in coder.user_sources:
         image_data = data["image"].split(",")[1]
         img = imread(io.BytesIO(base64.b64decode(image_data)))
@@ -111,20 +108,15 @@ def handle_message(data):
         kp_norm = coder.make_kp_norm(id, img)
         to_send = kp_norm[0]["value"].cpu().numpy().tolist()
         emit("kpNorm", to_send, broadcast=True)
-        print('kp_norm_sent')
-    else:
-        print('kp_norm skipped')
 
 @socketio.on('makePicture', namespace='/test') # Получаем запрос на преобразование вектора в изобаржение
 def handle_message(data):
-    print('Pic req')
     kp_norm = data["kp_norm"]
     kp_norm = {"value": torch.tensor(kp_norm).cuda(), "jacobian": None}
     id = data["id"]
     picture = coder.make_picture(id, kp_norm)
     base64_picture = base64.b64encode(cv2.imencode('.jpeg', cv2.cvtColor(img_as_ubyte(picture), cv2.COLOR_BGR2RGB))[1]).decode('utf-8')
     emit("ResultImage", {"image": base64_picture, "id": data["id"]}, broadcast=True)
-    print("result sent")
 
 
 

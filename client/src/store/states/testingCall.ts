@@ -70,7 +70,6 @@ export const startListening = () => (dispatch) => {
 
 
 const testing_call: TestingCallT =  {
-    currentImage: null,
     socket: socket,
     local_server_connection: false,
     conference_server_connection: false,

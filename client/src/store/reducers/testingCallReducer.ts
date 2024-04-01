@@ -50,8 +50,7 @@ function Testing_call(state: TestingCallT = initialstate, action: Action): Testi
         case ACTIONS.SET_IMAGE:
             state.users.set(action.id, 'data:image/jpeg;base64,' + action.image)
             return{
-                ...state,
-                currentImage: 'data:image/jpeg;base64,' + action.image
+                ...state
             }
         /////////////// LOCAL SERVER REDUCER START ///////////////
         case ACTIONS.SEND_SOURCE_IMAGE: // Пробрасываем в локальный сервер source изображение
