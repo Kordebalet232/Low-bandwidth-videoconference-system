@@ -16,7 +16,6 @@ const socketIO = require('socket.io')(http, {
 socketIO.on('connection', (socket) => {
     console.log(`⚡: ${socket.id} user just connected!`);
 
-
     socket.on('newSourceImage', (data) => {
       socketIO.emit('newSourceImage', data)
       console.log('new_source_sent')
@@ -30,6 +29,15 @@ socketIO.on('connection', (socket) => {
     socket.on('disconnect', () => {
       console.log('🔥: A user disconnected');
     });
+
+    socket.on('join-room', (userId) => {
+      console.log('joined', userId)
+      socket.broadcast.emit('user-connected', userId)
+      
+      socket.on('disconnect', () => {
+        socket.broadcast.emit('user-disconnected', userId)
+      })
+    })
 });
 
 

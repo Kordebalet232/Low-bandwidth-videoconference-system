@@ -1,13 +1,61 @@
 import TestingCallT from "../../types/testingCallTypes";
 import { io } from 'socket.io-client';
 import testingCallAC from "../actionCreators/testingCallAC";
+import { Peer } from "peerjs";
 
+const myPeer = new Peer(undefined, {
+  host: '/',
+  port: 3001
+})
+
+const peers = {}
+
+
+function addVideoStream(video, stream) {
+  video.srcObject = stream
+  video.addEventListener('loadedmetadata', () => {
+    video.play()
+  })
+}
+
+function connectToNewUser(userId, stream) {
+  const call = myPeer.call(userId, stream)
+  const video = document.createElement('video')
+  call.on('stream', userVideoStream => {
+    addVideoStream(video, userVideoStream)
+  })
+  call.on('close', () => {
+    video.remove()
+  })
+
+  peers[userId] = call
+}
+
+navigator.mediaDevices.getUserMedia({
+  video: false,
+  audio: true
+}).then(stream => {
+
+  myPeer.on('call', call => {
+    call.answer(stream)
+    const video = document.createElement('video')
+    call.on('stream', userVideoStream => {
+      addVideoStream(video, userVideoStream)
+    })
+  })
+
+  socket_conf.on('user-connected', userId => {
+    connectToNewUser(userId, stream)
+  })
+})
 
 const socket_conf: any = io('http://localhost:4000')
 
 const socket: any = io('http://127.0.0.1:5000/test');
 
-
+myPeer.on('open', id => {
+  socket_conf.emit('join-room', id)
+})
 
 export const startListening_server = () => (dispatch) => {
   
@@ -32,6 +80,9 @@ export const startListening_server = () => (dispatch) => {
       // }
     })
 
+    socket_conf.on('user-disconnected', userId => {
+      if (peers[userId]) peers[userId].close()
+    })
 
     socket_conf.on('newSourceImage', (data) => {
       dispatch(testingCallAC.sendSourceImage(data.id === socket_conf.id ? "0" : data.id, data.image))

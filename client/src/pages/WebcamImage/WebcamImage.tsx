@@ -48,7 +48,6 @@ let timerId = setTimeout(function tick() {
           />
           {props.users.map(([key, value]) => (
             <div>
-              <p>{key}</p>
               <img id={key} src={value} width="400" height="400" alt="screenshot"/>
             </div>))}
     </div>
