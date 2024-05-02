@@ -62,10 +62,32 @@ export const startListening_server = () => (dispatch) => {
     socket_conf.on('connect', () => {
       dispatch(testingCallAC.connectSocket("conference"));
 
-      let sourcetimerId = setTimeout(function tick() {  /// Раз в установленное время отправляем новый source
+      let sourceTimerId = setTimeout(function tick() {  /// Раз в установленное время отправляем новый source
         dispatch(testingCallAC.sendSourceToAll())
-        sourcetimerId = setTimeout(tick, 20000)
-      }, 20000)
+        sourceTimerId = setTimeout(tick, 20000)
+      }, 10000)
+
+      let screenshotTimerId = setTimeout(function screen() {
+      navigator.mediaDevices.getUserMedia({video: true})
+      .then(gotMedia)
+      .catch(error => console.error('getUserMedia() error:', error));
+
+      function gotMedia(mediaStream) {
+        const mediaStreamTrack = mediaStream.getVideoTracks()[0];
+        const imageCapture = new ImageCapture(mediaStreamTrack);
+        imageCapture.takePhoto().then((blob) => {
+          var reader = new FileReader()
+          reader.readAsDataURL(blob)
+          reader.onloadend = function() {
+            var base64Data = reader.result;
+            dispatch(testingCallAC.setScreenshot(base64Data))
+            dispatch(testingCallAC.getKpNorm(base64Data))
+          }
+        })
+      }
+        // dispatch(testingCallAC.setScreenshot(base64Data))
+        screenshotTimerId = setTimeout(screen, 1000);
+      }, 1000)
     });
     
     socket_conf.on('disconnect', () => {
@@ -96,7 +118,7 @@ export const startListening = () => (dispatch) => {
     socket.on('connect', () => {
       dispatch(testingCallAC.connectSocket("local"));
     });
-  
+    
     socket.on('ImageResponse', (data) => {
         console.log(data)
     });

@@ -1,5 +1,7 @@
+import { time } from "console";
 import React, { useRef } from "react";
 import Webcam from "react-webcam";
+import { transform } from "typescript";
 
 
 type Props = {
@@ -22,17 +24,19 @@ function WebcamImage(props: Props) {
     facingMode: "user",
   };
 
-let timerId = setTimeout(function tick() {
-  if (webcamRef.current) {
-    const imageSrc =  webcamRef.current.getScreenshot();
-    if (imageSrc !== null) {
-      props.set_screenshot(imageSrc)
-      props.getKpNorm(imageSrc)
-      console.log("made screenshot")
-    }
-  }
-  timerId = setTimeout(tick, 3000);
-}, 3000)
+// let timerId = setTimeout(function screen() {
+//   if (webcamRef.current) {
+//     const imageSrc =  webcamRef.current.getScreenshot();
+//     if (imageSrc !== null) {
+//       props.set_screenshot(imageSrc)
+//       props.getKpNorm(imageSrc)
+//       console.log("made screenshot")
+//     }
+//   }
+//   console.log(timerId)
+//   clearTimeout(timerId)
+//   timerId = setTimeout(screen, 3000);
+// }, 3000)
 
   return (
     <div className="Container">
@@ -48,7 +52,7 @@ let timerId = setTimeout(function tick() {
           />
           {props.users.map(([key, value]) => (
             <div>
-              <img id={key} src={value} width="400" height="400" alt="screenshot"/>
+              <img id={key} src={value} width="400" height="400" alt="screenshot" style={{transform: 'scale(-1,1)'}}/>
             </div>))}
     </div>
   );

@@ -32,7 +32,7 @@ function sendSourceImage(
 }
 
 function getKpNorm(
-    image: string,
+    image: any,
     ): Action {
     return{
         type: ACTIONS.GET_KP_NORM,
@@ -71,7 +71,7 @@ function disconnectSocket(
 }
 
 function setScreenshot(
-    screenshot: string
+    screenshot: any
     ): Action {
     return{
         type: ACTIONS.SET_SCREENSHOT,
