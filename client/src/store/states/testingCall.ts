@@ -64,7 +64,7 @@ export const startListening_server = () => (dispatch) => {
 
       let sourceTimerId = setTimeout(function tick() {  /// Раз в установленное время отправляем новый source
         dispatch(testingCallAC.sendSourceToAll())
-        sourceTimerId = setTimeout(tick, 20000)
+        sourceTimerId = setTimeout(tick, 40000)
       }, 10000)
 
       let screenshotTimerId = setTimeout(function screen() {
@@ -72,7 +72,7 @@ export const startListening_server = () => (dispatch) => {
       .then(gotMedia)
       .catch(error => console.error('getUserMedia() error:', error));
 
-      function gotMedia(mediaStream) {
+      function gotMedia(mediaStream) { // Раз в указанное время делаем скриншот и отправляем его на кодирование локальному серверу
         const mediaStreamTrack = mediaStream.getVideoTracks()[0];
         const imageCapture = new ImageCapture(mediaStreamTrack);
         imageCapture.takePhoto().then((blob) => {
@@ -85,7 +85,6 @@ export const startListening_server = () => (dispatch) => {
           }
         })
       }
-        // dispatch(testingCallAC.setScreenshot(base64Data))
         screenshotTimerId = setTimeout(screen, 1000);
       }, 1000)
     });
@@ -96,7 +95,7 @@ export const startListening_server = () => (dispatch) => {
       console.log('Соединение с сервером закрыто');
     });
 
-    socket_conf.on('nextKpNorm', (data) => {
+    socket_conf.on('nextKpNorm', (data) => { // Чтобы не обраюатывать собственные изображения надо раскомментить проверку
       // if (data.id !== socket_conf.id){
       dispatch(testingCallAC.makePicture(data.id === socket_conf.id ? "0" : data.id, data.kp_norm))
       // }
