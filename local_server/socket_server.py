@@ -12,6 +12,8 @@ from sync_batchnorm import DataParallelWithCallback
 import json
 import cv2
 from skimage import img_as_ubyte
+import threading
+
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -101,13 +103,14 @@ def handle_message(data):
 
 @socketio.on('makeKpNorm', namespace='/test') # Получаем запрос на преобразование изображения в вектор (только для собственных изображений)
 def handle_message(data):
-    if "0" in coder.user_sources:
-        image_data = data["image"].split(",")[1]
-        img = imread(io.BytesIO(base64.b64decode(image_data)))
-        id = data["id"]
-        kp_norm = coder.make_kp_norm(id, img)
-        to_send = kp_norm[0]["value"].cpu().numpy().tolist()
-        emit("kpNorm", to_send, broadcast=True)
+    if threading.active_count() < 20:
+        if "0" in coder.user_sources:
+            image_data = data["image"].split(",")[1]
+            img = imread(io.BytesIO(base64.b64decode(image_data)))
+            id = data["id"]
+            kp_norm = coder.make_kp_norm(id, img)
+            to_send = kp_norm[0]["value"].cpu().numpy().tolist()
+            emit("kpNorm", to_send, broadcast=True)
 
 @socketio.on('makePicture', namespace='/test') # Получаем запрос на преобразование вектора в изобаржение
 def handle_message(data):
