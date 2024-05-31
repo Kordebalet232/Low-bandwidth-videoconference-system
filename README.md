@@ -1,4 +1,3 @@
-# vkr
 Final qualifying project (magister program)
 
 Инструкция по запуску:
